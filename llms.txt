@@ -1,4 +1,4 @@
-# node-sdjournal
+# @yskomur/node-sdjournal
 
 > Native Node.js bindings for the systemd sd-journal C API — read and write. Built with pure NAPI (C), no C++ wrapper, ABI-stable across Node.js versions.
 
@@ -54,7 +54,7 @@ Important notes:
 
 ## Comparison
 
-| Feature | node-sdjournal | @yskomur/ts-journald |
+| Feature | @yskomur/node-sdjournal | @yskomur/ts-journald |
 |---|---|---|
 | Write | yes | yes |
 | Read / iterate | yes | no |
