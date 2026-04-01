@@ -83,6 +83,27 @@ static napi_value SeekCursor(napi_env env, napi_callback_info info) {
   napi_value undef; napi_get_undefined(env, &undef); return undef;
 }
 
+// ── reader.getCursor() → string | null ───────────────────────────────────────
+static napi_value GetCursor(napi_env env, napi_callback_info info) {
+  JournalReader *r = unwrap(env, info);
+
+  char *cursor = NULL;
+  int rc = sd_journal_get_cursor(r->j, &cursor);
+  if (rc < 0) {
+    if (rc == -EADDRNOTAVAIL) {
+      napi_value null_value;
+      napi_get_null(env, &null_value);
+      return null_value;
+    }
+    return throw_errno(env, rc, "sd_journal_get_cursor");
+  }
+
+  napi_value cursor_js;
+  napi_create_string_utf8(env, cursor, NAPI_AUTO_LENGTH, &cursor_js);
+  free(cursor);
+  return cursor_js;
+}
+
 // ── reader.seekTime(usec) ─────────────────────────────────────────────────────
 static napi_value SeekTime(napi_env env, napi_callback_info info) {
   size_t argc = 1; napi_value args[1]; napi_value this_val;
@@ -210,6 +231,7 @@ napi_value reader_init(napi_env env, napi_value exports) {
   EXPORT_FN("_seekHead",    SeekHead)
   EXPORT_FN("_seekTail",    SeekTail)
   EXPORT_FN("_seekCursor",  SeekCursor)
+  EXPORT_FN("_getCursor",   GetCursor)
   EXPORT_FN("_seekTime",    SeekTime)
   EXPORT_FN("_next",        Next)
   EXPORT_FN("_previous",    Previous)
