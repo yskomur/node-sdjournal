@@ -1,0 +1,23 @@
+{
+  "name": "node-sdjournal",
+  "version": "0.1.0",
+  "description": "Native Node.js bindings for systemd sd-journal (read + write)",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "node-gyp configure build",
+    "build:debug": "node-gyp configure build --debug",
+    "clean": "node-gyp clean",
+    "test": "node test/index.test.js"
+  },
+  "gypfile": true,
+  "keywords": ["systemd", "journal", "journald", "logging", "napi"],
+  "license": "MIT",
+  "devDependencies": {
+    "node-gyp": "^10.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "os": ["linux"]
+}
