@@ -83,6 +83,14 @@ await r.follow(
 | `wait(usec?)` | Yeni veri bekle |
 | `follow(fn, opts?)` | tail -f, AbortSignal destekli |
 
+## Contributing
+
+Contributions are welcome! Please open an issue or pull request on [GitHub](https://github.com/yskomur/node-sdjournal).
+
+## Credits
+
+Designed and written by [Claude.ai](https://claude.ai) (Anthropic) in collaboration with [@yskomur](https://github.com/yskomur).
+
 ## License
 
 MIT
