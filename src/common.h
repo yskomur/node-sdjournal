@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdio.h>
 #include <node_api.h>
 #include <systemd/sd-journal.h>
 #include <errno.h>

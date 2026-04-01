@@ -1,6 +1,6 @@
 {
-  "name": "node-sdjournal",
-  "version": "0.1.0",
+  "name": "@yskomur/node-sdjournal",
+  "version": "0.1.1",
   "description": "Native Node.js bindings for systemd sd-journal (read + write)",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
