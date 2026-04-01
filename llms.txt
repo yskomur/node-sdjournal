@@ -10,7 +10,7 @@ Important notes:
 - Node.js >= 18 required. Native addon must be compiled with `npm run build` after install.
 - `JournalReader` wraps `sd_journal*` with a GC finalizer — `close()` is called automatically if omitted, but explicit close is recommended.
 - `follow()` uses `AbortSignal` for clean shutdown and `setImmediate` internally to avoid blocking the event loop.
-- This package covers read + write. For write-only with zero native dependencies, see `@yskomur/ts-journald`.
+- This package covers read + write. For high-level logging with optional native backend selection, see `@yskomur/ts-journald`.
 
 ## Docs
 
@@ -60,12 +60,12 @@ Important notes:
 | Read / iterate | yes | no |
 | Follow (tail -f) | yes | no |
 | Match / filter | yes | no |
-| Native dependency | libsystemd (NAPI) | unix-dgram (optional) |
+| Native dependency | libsystemd (NAPI) | optional via `@yskomur/node-sdjournal` |
 | TypeScript | yes (.d.ts) | yes (source) |
 
 ## See also
 
-- [@yskomur/ts-journald](https://github.com/yskomur/ts-journald) — write-only journald logger, pure TypeScript, cloud fallback support
+- [@yskomur/ts-journald](https://github.com/yskomur/ts-journald) — high-level logger facade with managed/cloud fallback support
 
 ## Optional
 
