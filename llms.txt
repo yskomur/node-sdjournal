@@ -1,0 +1,73 @@
+# node-sdjournal
+
+> Native Node.js bindings for the systemd sd-journal C API — read and write. Built with pure NAPI (C), no C++ wrapper, ABI-stable across Node.js versions.
+
+Use this package when a Node.js service needs to write structured logs to systemd journald, read and iterate journal entries, filter by field, or tail the journal in real time (follow mode). It wraps libsystemd directly via NAPI — no subprocess, no FFI layer.
+
+Important notes:
+
+- Requires Linux with systemd and `libsystemd-dev` (Debian/Ubuntu) or `systemd-devel` (Fedora/RHEL) at build time.
+- Node.js >= 18 required. Native addon must be compiled with `npm run build` after install.
+- `JournalReader` wraps `sd_journal*` with a GC finalizer — `close()` is called automatically if omitted, but explicit close is recommended.
+- `follow()` uses `AbortSignal` for clean shutdown and `setImmediate` internally to avoid blocking the event loop.
+- This package covers read + write. For write-only with zero native dependencies, see `@yskomur/ts-journald`.
+
+## Docs
+
+- [README](https://github.com/yskomur/node-sdjournal/blob/main/README.md): Installation, API reference, and usage examples.
+- [npm package](https://www.npmjs.com/package/@yskomur/node-sdjournal): Published package entry.
+
+## API summary
+
+### Write
+
+- `print(priority, message)` — wraps `sd_journal_print`
+- `send(fields)` — wraps `sd_journal_sendv`, sends structured key/value fields
+
+### Read — JournalReader class
+
+- `JournalReader.open(flags?)` — open journal (`OpenFlags.LOCAL_ONLY`, `SYSTEM`, `CURRENT_USER`, `RUNTIME_ONLY`)
+- `seekHead()` / `seekTail()` — move to oldest or newest entry
+- `seekCursor(cursor)` — jump to a specific cursor position
+- `seekTime(Date | ms)` — seek to a point in time
+- `next()` / `previous()` — iterate entries, returns boolean
+- `getEntry()` — returns `{ fields, cursor, timestamp, realtimeUsec }`
+- `addMatch(str)` — filter by field e.g. `"_SYSTEMD_UNIT=nginx.service"` or `"PRIORITY=6"`
+- `flushMatches()` — clear all filters
+- `wait(timeoutUsec?)` — block until journal changes, returns `WaitResult`
+- `follow(onEntry, { signal?, pollUsec? })` — tail -f with AbortSignal support
+- `close()` — release sd_journal handle
+
+### Constants
+
+- `Priority` — `EMERG=0` to `DEBUG=7`
+- `OpenFlags` — `LOCAL_ONLY`, `SYSTEM`, `CURRENT_USER`, `RUNTIME_ONLY`
+- `WaitResult` — `NOP=0`, `APPEND=1`, `INVALIDATE=2`
+
+## Common tasks
+
+- Write a structured log entry: use `send({ MESSAGE, PRIORITY, SYSLOG_IDENTIFIER, ...customFields })`
+- Read last N entries for a unit: `addMatch('_SYSTEMD_UNIT=myapp.service')`, `seekTail()`, loop `previous()`
+- Tail journal live: `JournalReader.open()` → `follow(onEntry, { signal: ac.signal })`
+- Filter by priority: `addMatch('PRIORITY=3')` (ERR and above)
+- Resume from last position: `seekCursor(savedCursor)` then `next()`
+
+## Comparison
+
+| Feature | node-sdjournal | @yskomur/ts-journald |
+|---|---|---|
+| Write | yes | yes |
+| Read / iterate | yes | no |
+| Follow (tail -f) | yes | no |
+| Match / filter | yes | no |
+| Native dependency | libsystemd (NAPI) | unix-dgram (optional) |
+| TypeScript | yes (.d.ts) | yes (source) |
+
+## See also
+
+- [@yskomur/ts-journald](https://github.com/yskomur/ts-journald) — write-only journald logger, pure TypeScript, cloud fallback support
+
+## Optional
+
+- [Repository](https://github.com/yskomur/node-sdjournal): Source code, issues, and release history.
+- [coreos/go-systemd sdjournal](https://github.com/coreos/go-systemd/tree/main/sdjournal): Go equivalent this package is modelled after.
